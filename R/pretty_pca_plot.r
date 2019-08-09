@@ -105,9 +105,9 @@ pretty_pca_plot <-
     else if (type == "ggplot")
     {
       arguments <- list(...)
-      df <- data.frame(x, y, z, x_end, y_end, year = dates$years, month = dates$months)
+      df <- data.frame(x, y, z, x_end, y_end, year = dates$years, month = month.abb[dates$months])
       plot.g <- ggplot2::ggplot(df) +
-        ggplot2::geom_point(ggplot2::aes(x = x, y = y, col = as.factor(month), shape = as.factor(year))) +
+        ggplot2::geom_point(ggplot2::aes(x = x, y = y, col = month, shape = as.factor(year))) +
         ggplot2::geom_segment(ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end, linetype = as.factor(year)), alpha = 0.5) +
         ggplot2::theme_bw() +
         ggplot2::ylab(paste("PC2 (", round(varex[2] * 100, 1), "%)", sep = "")) +
