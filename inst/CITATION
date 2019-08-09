@@ -1,0 +1,10 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{Brunisol}: Analysis of holomixis phenomena of Zurich Lake",
+         author = c(person("Matthieu", "Mulot"),
+                    person("Estelle", "Bruni")),
+         year = year,
+         note = note,
+         url = "https://github.com/nibortolum/brunisol")

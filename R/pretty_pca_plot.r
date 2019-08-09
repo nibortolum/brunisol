@@ -1,8 +1,9 @@
 #' Pretty PCA Plot
 #'
+#' @description This function takes a PCA object and a dates vector. The dates are processed and split in day, months, and years.
+#'     The pca is then plotted and points are connected through time, to see the evolution of the lake communities.
 #' @param obj A PCA object computed with prcomp or princomp
-#' @param month an ordered vector with the months
-#' @param year an ordered vector with the year
+#' @param dates a vector of dates
 #' @param type `default` or `ggplot` to decide which kind of graph you want to do
 #' @param ... optional parameters to be passed to the plot function
 #'
@@ -11,24 +12,28 @@
 #'
 #' @examples
 #'
-#' month <- rep(month.name, 3)
-#' year <- c(rep(2014, 12), rep(2015, 12), rep(2016, 12))
+#' year <- c(rep(2014,12), rep(2015, 12), rep(2016, 12))
+#' month <- rep(1:12, 3)
+#' day <- sample(1:28, 36, replace = TRUE)
+#' my_date <- paste(year, month, day, sep="-")
+#'
 #'
 #' data <- matrix(ncol = 10,
 #'                nrow = 36,
 #'                data = rnorm(360))
 #'
 #' data.pca <- prcomp(data)
-#' pretty_pca_plot(data.pca, month, year, main = "test plot")
+#' pretty_pca_plot(data.pca, my_date, main = "test plot")
 #'
 pretty_pca_plot <-
-  function(obj, month, year, type = "default", ...) {
+  function(obj, dates, type = "default", ...) {
     # to do : include rda method
 
     possible_class <- c("prcomp", "princomp")
     if (!(class(obj) %in% possible_class)) {
       stop("obj must be either computed with prcomp, or princomp")
     }
+
 
     if (class(obj) == "prcomp") {
       loadings <- obj$rotation
@@ -64,31 +69,45 @@ pretty_pca_plot <-
     # }
 
 
+    #rearrange dates
+
+    dates <- rearrange_dates(dates)
+    new_order <- order(dates$dates)
+    dates <- dates[new_order, ]
+
+    x <- x[new_order]
+    y <- y[new_order]
+    z <- z[new_order]
+
+
     # arrow destinations
     y_end <- dplyr::lead(y)
     x_end <- dplyr::lead(x)
 
+
+
     #plot
+
 
     if (type == "default") {
       plot(
         x,
         y,
-        col = as.factor(month),
-        pch = as.numeric(as.factor(year)),
+        col = as.factor(dates$month),
+        pch = as.numeric(as.factor(dates$years)),
         ylab = paste("PC2 (", round(varex[2] * 100, 1), "%)", sep = ""),
         xlab = paste("PC1 (", round(varex[1] * 100, 1), "%)", sep = ""),
         ...
       )
 
-      segments(x, y, x_end, y_end, lty = as.numeric(as.factor(year)))
+      segments(x, y, x_end, y_end, lty = as.numeric(as.factor(dates$years)))
     }
     else if (type == "ggplot")
     {
       arguments <- list(...)
-      df <- data.frame(x, y, z, x_end, y_end, year, month)
+      df <- data.frame(x, y, z, x_end, y_end, year = dates$years, month = dates$months)
       plot.g <- ggplot2::ggplot(df) +
-        ggplot2::geom_point(ggplot2::aes(x = x, y = y, col = month, shape = as.factor(year))) +
+        ggplot2::geom_point(ggplot2::aes(x = x, y = y, col = as.factor(month), shape = as.factor(year))) +
         ggplot2::geom_segment(ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end, linetype = as.factor(year)), alpha = 0.5) +
         ggplot2::theme_bw() +
         ggplot2::ylab(paste("PC2 (", round(varex[2] * 100, 1), "%)", sep = "")) +
