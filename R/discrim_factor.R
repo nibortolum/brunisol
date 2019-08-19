@@ -1,8 +1,8 @@
 #' Identify factors discriminating clusters
 #'
-#' @param data : a matrix of features (with features as column)
-#' @param groups : a vector of groups binning the matrix of features
-#' @param p.adj : The method to correct the `p-value`. See \link[stats]{p.adjust} for available methods.
+#' @param data a matrix of features (with features as column)
+#' @param groups a vector of groups binning the matrix of features
+#' @param p.adj The method to correct the `p-value`. See \link[stats]{p.adjust} for available methods.
 #'
 #' @details This function seeks to measure the importance of each variable on the composition of clusters. It computes a \link[MASS]{lda} and extracts the scaling as proxy of the importance of the variable on cluster separation.
 #'
@@ -47,9 +47,10 @@ discrim_factors <- function(data, groups, p.adj = "none"){
     pval[i] <- mod.anova$`Pr(>F)`[1]
   }
 
-  summary.group$pvalue <- p.adjust(pval, p.adj)
+  summary.group$pvalue <- p.adjust(pval, "bon")
 
   return(summary.group %>%
            dplyr::select(scaling, everything()) %>%
+           tibble::rownames_to_column(var = "Feature") %>%
            dplyr::arrange(-abs(scaling)))
 }
