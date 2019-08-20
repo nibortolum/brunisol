@@ -16,4 +16,5 @@ Imports:
     ggplot2,
     parsedate,
     lubridate,
-    MASS
+    MASS,
+    tibble

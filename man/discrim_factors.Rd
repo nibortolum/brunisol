@@ -4,7 +4,7 @@
 \alias{discrim_factors}
 \title{Identify factors discriminating clusters}
 \usage{
-discrim_factors(data, groups, p.adj = "none")
+discrim_factors(data, groups, p.adj = "bon")
 }
 \arguments{
 \item{data}{a matrix of features (with features as column)}
@@ -17,10 +17,10 @@ discrim_factors(data, groups, p.adj = "none")
 a dataframe containing the cumulated LDA scaling scores of each feature, the mean and SD of each feature for each group, and the p-value of the ANOVA computed with each feature as response variable, and the grouping vector as explanatory variable.
 }
 \description{
-Identify factors discriminating clusters
+This function seeks to measure the importance of each variable on the composition of clusters. It computes a \link[MASS]{lda} and extracts the scaling as proxy of the importance of the variable on cluster separation.
 }
 \details{
-This function seeks to measure the importance of each variable on the composition of clusters. It computes a \link[MASS]{lda} and extracts the scaling as proxy of the importance of the variable on cluster separation.
+The funtion will test for a difference in each feature mean with respect to each group with an ANOVA. If only two groups are specified, it will use a t.test instead. If you want to compute pairwise differences (group to group), use \link[brunisol]{discrim_factors_pairwise} instead.
 }
 \examples{
 data(iris)

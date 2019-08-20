@@ -1,10 +1,11 @@
 #' Identify factors discriminating clusters
 #'
+#' @description This function seeks to measure the importance of each variable on the composition of clusters. It computes a \link[MASS]{lda} and extracts the scaling as proxy of the importance of the variable on cluster separation.
 #' @param data a matrix of features (with features as column)
 #' @param groups a vector of groups binning the matrix of features
 #' @param p.adj The method to correct the `p-value`. See \link[stats]{p.adjust} for available methods.
 #'
-#' @details This function seeks to measure the importance of each variable on the composition of clusters. It computes a \link[MASS]{lda} and extracts the scaling as proxy of the importance of the variable on cluster separation.
+#' @details The funtion will test for a difference in each feature mean with respect to each group with an ANOVA. If only two groups are specified, it will use a t.test instead. If you want to compute pairwise differences (group to group), use \link[brunisol]{discrim_factors_pairwise} instead.
 #'
 #' @return a dataframe containing the cumulated LDA scaling scores of each feature, the mean and SD of each feature for each group, and the p-value of the ANOVA computed with each feature as response variable, and the grouping vector as explanatory variable.
 #' @export
@@ -16,7 +17,7 @@
 #'
 #' discrim_factors(my_features, my_groups, "bon")
 #'
-discrim_factors <- function(data, groups, p.adj = "none"){
+discrim_factors <- function(data, groups, p.adj = "bon"){
   my.lda <- MASS::lda(data, groups)
   my.scalings <- my.lda$scaling
   my.scalings <- rowSums(my.scalings)
@@ -42,9 +43,15 @@ discrim_factors <- function(data, groups, p.adj = "none"){
     tmp <- row.names(summary.group)[i]
     val <- cbind(data[tmp], groups)
     colnames(val) <- c("val", "group")
-    mod <- aov(val ~ group, val)
-    mod.anova <- anova(mod)
-    pval[i] <- mod.anova$`Pr(>F)`[1]
+    if(length(unique(groups)) == 2){
+      # cat("doing t.test \n")
+      pval[i] <- t.test(val ~ group, val)$p.value
+    }
+    else {
+      mod <- aov(val ~ group, val)
+      mod.anova <- anova(mod)
+      pval[i] <- mod.anova$`Pr(>F)`[1]
+    }
   }
 
   summary.group$pvalue <- p.adjust(pval, "bon")
