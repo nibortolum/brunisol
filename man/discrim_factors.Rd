@@ -7,11 +7,11 @@
 discrim_factors(data, groups, p.adj = "none")
 }
 \arguments{
-\item{data}{: a matrix of features (with features as column)}
+\item{data}{a matrix of features (with features as column)}
 
-\item{groups}{: a vector of groups binning the matrix of features}
+\item{groups}{a vector of groups binning the matrix of features}
 
-\item{p.adj}{: The method to correct the `p-value`. See \link[stats]{p.adjust} for available methods.}
+\item{p.adj}{The method to correct the `p-value`. See \link[stats]{p.adjust} for available methods.}
 }
 \value{
 a dataframe containing the cumulated LDA scaling scores of each feature, the mean and SD of each feature for each group, and the p-value of the ANOVA computed with each feature as response variable, and the grouping vector as explanatory variable.

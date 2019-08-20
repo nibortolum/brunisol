@@ -3,3 +3,4 @@
 export(discrim_factors)
 export(pretty_pca_plot)
 export(rearrange_dates)
+export(ski)
